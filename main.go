@@ -23,13 +23,11 @@ type NBFile struct {
 }
 
 func parseNBFile(filename string) error {
-	// 1. Read the .nb file
 	fileContent, err := os.ReadFile(filename)
 	if err != nil {
 		return fmt.Errorf("failed to read .nb file: %w", err)
 	}
 
-	// 2. Parse the JSON content
 	var nbFile NBFile
 	err = json.Unmarshal(fileContent, &nbFile)
 	if err != nil {
@@ -51,19 +49,23 @@ func parseNBFile(filename string) error {
 	}
 	key := getResp.Value
 
+	decodedKey, err := base64.StdEncoding.DecodeString(*key)
+	if err != nil {
+		return fmt.Errorf("failed to base64 decode key: %w", err)
+	}
+
 	if nbFile.Data == "" {
 		// Decrypt from encrypted_data
 		if nbFile.EncryptedData == "" {
 			return fmt.Errorf("encrypted_data is empty, cannot decrypt")
 		}
 
-		// 4. Decrypt the data
 		ciphertext, err := base64.StdEncoding.DecodeString(nbFile.EncryptedData)
 		if err != nil {
 			return fmt.Errorf("failed to decode ciphertext: %w", err)
 		}
 
-		plaintext, err := decryptAES(ciphertext, []byte(*key))
+		plaintext, err := decryptAES(ciphertext, decodedKey)
 		if err != nil {
 			return fmt.Errorf("failed to decrypt data: %w", err)
 		}
@@ -71,8 +73,7 @@ func parseNBFile(filename string) error {
 		nbFile.Data = string(plaintext)
 
 	} else {
-		// Encrypt the data
-		encryptedData, err := encryptContent(nbFile.Data, []byte(*key))
+		encryptedData, err := encryptContent(nbFile.Data, decodedKey)
 		if err != nil {
 			return fmt.Errorf("failed to encrypt data: %w", err)
 		}
@@ -80,7 +81,6 @@ func parseNBFile(filename string) error {
 		nbFile.Data = "" // Clear data after encryption
 	}
 
-	// 5. Write back to the file
 	updatedFileContent, err := json.MarshalIndent(nbFile, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated .nb file: %w", err)
