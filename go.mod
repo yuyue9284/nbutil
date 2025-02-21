@@ -1,4 +1,4 @@
-module test
+module github.com/nbfile
 
 go 1.24.0
 
