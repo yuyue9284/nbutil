@@ -35,7 +35,7 @@ func parseNBFile(filename string) error {
 	if err != nil {
 		return fmt.Errorf("failed to parse .nb file: %w", err)
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	cred, err := azidentity.NewInteractiveBrowserCredential(nil)
 	if err != nil {
 		return fmt.Errorf("failed to create Azure credential: %w", err)
 	}
