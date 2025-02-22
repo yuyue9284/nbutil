@@ -1,4 +1,4 @@
-module nbutil
+module github.com/yuyue9284/nbutil
 
 go 1.24.0
 
