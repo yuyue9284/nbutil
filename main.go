@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/nbfile/pkg"
+	"github.com/nbutil/pkg"
 )
 
 func main() {

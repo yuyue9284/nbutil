@@ -1,4 +1,4 @@
-module github.com/nbfile
+module github.com/nbutil
 
 go 1.24.0
 
